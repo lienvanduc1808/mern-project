@@ -1,0 +1,37 @@
+.navbar_container {
+  background-color: #fff;
+}
+
+.WrapperLabelText {
+  color: rgb(56, 56, 61);
+  font-size: 14px;
+  font-weight: 500;
+}
+.WrapperTextValue {
+  font-size: 12px;
+  font-weight: 400;
+  color: rgb(56, 56, 61);
+}
+.WrapperContent {
+  display: flex;
+
+  flex-direction: column;
+  gap: 12px;
+}
+.checkboxNav {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.rate_star {
+  display: flex;
+  gap: 14px;
+}
+.price_product {
+  border-radius: 10px;
+  background-color: rgb(238, 238, 238);
+  width: fit-content;
+  padding: 4px;
+  color: rgb(56, 56, 61);
+}

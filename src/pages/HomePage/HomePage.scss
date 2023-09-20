@@ -1,0 +1,23 @@
+.Homepage_Container {
+  padding: 0 120px;
+  .WrapperProduct {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: nowrap;
+    border-bottom: 1px solid red;
+    height: 44px;
+  }
+  .Body_Product {
+    background-color: #efefef;
+    padding: 0 120px;
+    height: 1300px;
+    .Card_Product {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-top: 20px;
+    }
+  }
+}
