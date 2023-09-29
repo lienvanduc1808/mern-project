@@ -1,7 +1,7 @@
 import React from "react";
 
 import "./NavBarComponent.scss";
-import { Checkbox, Col, Rate, Row } from "antd";
+import { Checkbox, Rate } from "antd";
 
 function NavBarComponent() {
   const onChange = () => {};
@@ -9,7 +9,11 @@ function NavBarComponent() {
     switch (type) {
       case "text":
         return options.map((option) => {
-          return <span className="WrapperTextValue">{option}</span>;
+          return (
+            <span key={option} className="WrapperTextValue">
+              {option}
+            </span>
+          );
         });
       case "checkbox":
         return (
@@ -19,14 +23,18 @@ function NavBarComponent() {
             className="checkboxNav"
           >
             {options.map((option) => {
-              return <Checkbox value={option.value}>{option.label}</Checkbox>;
+              return (
+                <Checkbox key={option.value} value={option.value}>
+                  {option.label}
+                </Checkbox>
+              );
             })}
           </Checkbox.Group>
         );
       case "star":
         return options.map((option) => {
           return (
-            <div className="rate_star">
+            <div key={option} className="rate_star">
               <Rate disabled defaultValue={option} />
               <span> từ {option} sao</span>
             </div>
@@ -34,7 +42,11 @@ function NavBarComponent() {
         });
       case "price":
         return options.map((option) => {
-          return <div className="price_product">{option}</div>;
+          return (
+            <div key={option} className="price_product">
+              {option}
+            </div>
+          );
         });
 
       default:
@@ -46,12 +58,6 @@ function NavBarComponent() {
       <h4 className="WrapperLabelText">Label</h4>
       <div className="WrapperContent">
         {renderContent("text", ["Tu lanh", "TV", "Dien thoai"])}
-        {renderContent("checkbox", [
-          { value: "a", label: "A" },
-          { value: "b", label: "B" },
-        ])}
-        {renderContent("star", [3, 4, 5])}
-        {renderContent("price", ["duoi 40,000", "tren 50,000"])}
       </div>
     </div>
   );

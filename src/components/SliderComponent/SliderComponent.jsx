@@ -16,6 +16,7 @@ function SliderComponent({ arrImages }) {
       {arrImages.map((item) => {
         return (
           <Image
+            key={item}
             src={item}
             alt="slider"
             preview={false}

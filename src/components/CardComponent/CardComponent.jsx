@@ -27,7 +27,7 @@ function CardComponent() {
         }
       >
         <div className="product_logo">
-          <Image src={logo} classname="" />
+          <Image src={logo} className="" />
         </div>
 
         <div className="Name_Product">Iphone</div>

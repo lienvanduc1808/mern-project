@@ -1,0 +1,29 @@
+.Type_productContainer {
+  padding: 0 120px;
+  background: #efefef;
+}
+
+.TypeProduct {
+  padding: 0 120px;
+  background: #efefef;
+  flex-wrap: nowrap;
+  justify-content: center;
+  padding-top: 10px;
+}
+.col_type {
+  background: #fff;
+  margin-right: 10px;
+  padding: 10px;
+  border-radius: 6px;
+}
+
+.row_type {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.pagination {
+  text-align: center;
+  margin-top: 10px;
+}

@@ -1,5 +1,6 @@
 .Card_Container {
   margin-top: 20px;
+  padding: 10px;
 }
 .Name_Product {
   font-weight: 400;
@@ -13,10 +14,10 @@
   color: rgb(128, 128, 137);
   display: flex;
   align-items: center;
-  .star_icon {
-    color: yellow;
-    font-size: 10px;
-  }
+}
+.star_icon {
+  color: yellow;
+  font-size: 10px;
 }
 .Wrapper_Price {
   font-size: 16px;

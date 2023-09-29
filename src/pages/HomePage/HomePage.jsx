@@ -21,6 +21,16 @@ function HomePage() {
         <SliderComponent arrImages={[anh1, anh2, anh3]} />
         <div className="Card_Product">
           <CardComponent />
+          <CardComponent />
+          <CardComponent />
+          <CardComponent />
+          <CardComponent />
+          <CardComponent />
+          <CardComponent />
+          <CardComponent />
+        </div>
+        <div className="flex_center">
+          <button className="button_more">Xem thêm </button>
         </div>
         <NavBarComponent />
       </div>
