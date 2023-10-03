@@ -43,3 +43,10 @@
     }
   }
 }
+
+.WrapperPopup {
+  cursor: pointer;
+  &:hover {
+    color: rgb(26, 148, 225);
+  }
+}

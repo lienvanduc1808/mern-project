@@ -1,0 +1,32 @@
+.Profile_Container {
+  width: 1270px;
+  margin: 0 auto;
+  height: 500px;
+  .WrapperHeader {
+    color: black;
+    font-size: 18px;
+    margin: 4px 0;
+  }
+  .WrapperContentProfile {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ccc;
+    width: 600px;
+    margin: 0 auto;
+    padding: 30px;
+    border-radius: 10px;
+    gap: 30px;
+    .wrapperInput {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      .wrapperLabel {
+        color: black;
+        font-size: 12px;
+        line-height: 0px;
+        font-weight: 600;
+        width: 50px;
+      }
+    }
+  }
+}

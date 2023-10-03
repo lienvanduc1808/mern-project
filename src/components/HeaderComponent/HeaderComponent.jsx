@@ -1,5 +1,5 @@
-import React from "react";
-import { Row, Col, Badge } from "antd";
+import React, { useState } from "react";
+import { Row, Col, Badge, Popover, Button } from "antd";
 import "./HeaderComponent.scss";
 import { AudioOutlined } from "@ant-design/icons";
 import { Input } from "antd";
@@ -8,8 +8,11 @@ import {
   CaretDownOutlined,
   ShoppingCartOutlined,
 } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { Navigate, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import * as UserService from "../../services/UserService";
+import { resetUser } from "../../redux/slices/userSlices";
+import LoadingComponent from "../LoadingComponent/LoadingComponent";
 
 const { Search } = Input;
 const suffix = (
@@ -23,12 +26,36 @@ const suffix = (
 const onSearch = (value) => console.log(value);
 
 function HeaderComponent() {
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
-  console.log("user", user);
+
   const handleNavigateLogin = () => {
     navigate("/sign-in");
   };
+  const handleLogout = async () => {
+    setLoading(true);
+    await UserService.logOutUser();
+    dispatch(resetUser());
+    setLoading(false);
+  };
+  const content = (
+    <div>
+      <p className="WrapperPopup" onClick={handleLogout}>
+        Đăng xuất
+      </p>
+      <p
+        className="WrapperPopup"
+        onClick={() => {
+          navigate("/profile-user");
+        }}
+      >
+        Thôg tin người dùng{" "}
+      </p>
+    </div>
+  );
   return (
     <div>
       <div className="WrapperHeader">
@@ -46,23 +73,29 @@ function HeaderComponent() {
             />
           </Col>
           <Col span={6} className="UserInfo">
-            <div className="WrapperAccount">
-              <UserOutlined className="AccountIcon" />
-              {user?.name ? (
-                <div style={{ cursor: "pointer", paddingTop: "10px" }}>
-                  {user?.name}
-                </div>
-              ) : (
-                <div className="AccountInfo">
-                  <div onClick={handleNavigateLogin}>
-                    <span>Đăng nhập/Đăng ký</span>
+            <LoadingComponent isLoading={loading}>
+              <div className="WrapperAccount">
+                <UserOutlined className="AccountIcon" />
+                {user?.access_token ? (
+                  <>
+                    <Popover content={content} trigger="click">
+                      <div style={{ cursor: "pointer", paddingTop: "10px" }}>
+                        {user?.name || user?.email || "User"}
+                      </div>
+                    </Popover>
+                  </>
+                ) : (
+                  <div className="AccountInfo">
+                    <div onClick={handleNavigateLogin}>
+                      <span>Đăng nhập/Đăng ký</span>
+                    </div>
+                    <span>
+                      Tài khoản <CaretDownOutlined />
+                    </span>
                   </div>
-                  <span>
-                    Tài khoản <CaretDownOutlined />
-                  </span>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            </LoadingComponent>
             <div className="WrapperCart">
               <Badge count={4} size="small">
                 <ShoppingCartOutlined className="CartIcon" />

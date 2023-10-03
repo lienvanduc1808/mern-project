@@ -6,7 +6,6 @@ import imageLogo from "../../assets/images/signinRight.png";
 import { Image } from "antd";
 import { useNavigate } from "react-router-dom";
 
-import axios from "axios";
 import * as UserService from "../../services/UserService";
 import { useMutationHooks } from "../../hooks/useMutationHook";
 import LoadingComponent from "../../components/LoadingComponent/LoadingComponent";
@@ -30,10 +29,15 @@ function SigninPage() {
     if (isSuccess) {
       Navigate("/");
 
-      localStorage.setItem("access token", data?.access_token);
+      localStorage.setItem("access_token", JSON.stringify(data?.access_token));
+      localStorage.setItem(
+        "refresh_token",
+        JSON.stringify(data?.refresh_token)
+      );
+
       if (data?.access_token) {
         const decoded = jwt_decode(data?.access_token);
-        console.log("decoded", decoded);
+
         if (decoded?.id) {
           handleGetDetailUser(decoded?.id, data?.access_token);
         }
@@ -58,7 +62,6 @@ function SigninPage() {
   const handleGetDetailUser = async (id, token) => {
     const res = await UserService.getDetaisUser(id, token);
     dispatch(updateUser({ ...res?.data, access_token: token }));
-    console.log("res", res);
   };
   return (
     <div className="SigninPage">
