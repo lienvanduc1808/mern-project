@@ -2,6 +2,7 @@ import axios from "axios";
 export const axiosJWT = axios.create();
 export const loginUser = async (data) => {
   const res = await axios.post(`http://localhost:3001/api/user/sign-in`, data);
+  console.log("res", res);
   return res.data;
 };
 
