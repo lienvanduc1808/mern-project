@@ -4,7 +4,19 @@ import "./CardComponent.scss";
 import { StarFilled } from "@ant-design/icons";
 import logo from "../../assets/images/checkauth.png";
 
-function CardComponent() {
+function CardComponent(props) {
+  const {
+    countInStock,
+    description,
+    image,
+    name,
+    rating,
+    price,
+    type,
+    discount,
+    selled,
+  } = props;
+
   return (
     <div className="Card_Container">
       <Card
@@ -30,17 +42,17 @@ function CardComponent() {
           <Image src={logo} className="" />
         </div>
 
-        <div className="Name_Product">Iphone</div>
+        <div className="Name_Product">{name}</div>
         <div className="Wrapper_ReportText">
           <span>
             <span>
-              4.96 <StarFilled className="star_icon" />
+              {rating} <StarFilled className="star_icon" />
             </span>
           </span>
-          <span>| đã bán 1000</span>
+          <span>| đã bán {selled || 1000}</span>
         </div>
         <div className="Wrapper_Price">
-          1,000,000 <span className="Discount_Price">24%</span>
+          {price} <span className="Discount_Price">{discount || 5} %</span>
         </div>
       </Card>
     </div>

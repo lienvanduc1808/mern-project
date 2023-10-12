@@ -8,7 +8,7 @@ const initialState = {
   avatar: "",
   access_token: "",
   id: "",
-
+  isAdmin: false,
   isLoading: false,
 };
 
@@ -26,6 +26,7 @@ export const userSlices = createSlice({
         avatar = "",
         refresh_token,
         _id,
+        isAdmin,
       } = action.payload;
 
       state.name = name || "";
@@ -35,6 +36,7 @@ export const userSlices = createSlice({
       state.avatar = avatar || "";
       state.id = _id;
       state.access_token = access_token;
+      state.isAdmin = isAdmin;
     },
     resetUser: (state, action) => {
       state.name = "";
@@ -44,6 +46,7 @@ export const userSlices = createSlice({
       state.address = "";
       state.id = "";
       state.avatar = "";
+      state.isAdmin = false;
     },
   },
 });

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Row, Col, Badge, Popover, Button } from "antd";
 import "./HeaderComponent.scss";
 import { AudioOutlined } from "@ant-design/icons";
@@ -25,8 +25,10 @@ const suffix = (
 );
 const onSearch = (value) => console.log(value);
 
-function HeaderComponent() {
+function HeaderComponent({ isHiddenSearch = false, isHiddenCart = false }) {
   const dispatch = useDispatch();
+  const [userName, setUserName] = useState("");
+  const [userAvatar, setUserAvatar] = useState("");
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -41,11 +43,15 @@ function HeaderComponent() {
     dispatch(resetUser());
     setLoading(false);
   };
+
+  useEffect(() => {
+    setLoading(true);
+    setUserName(user.name);
+    setUserAvatar(user.avatar);
+    setLoading(false);
+  }, [user.name, user?.avatar]);
   const content = (
     <div>
-      <p className="WrapperPopup" onClick={handleLogout}>
-        Đăng xuất
-      </p>
       <p
         className="WrapperPopup"
         onClick={() => {
@@ -54,33 +60,70 @@ function HeaderComponent() {
       >
         Thôg tin người dùng{" "}
       </p>
+
+      {user.isAdmin && (
+        <p
+          className="WrapperPopup"
+          onClick={() => {
+            navigate("/system/admin");
+          }}
+        >
+          Quản lý hệ thống{" "}
+        </p>
+      )}
+      <p className="WrapperPopup" onClick={handleLogout}>
+        Đăng xuất
+      </p>
     </div>
   );
   return (
     <div>
       <div className="WrapperHeader">
-        <Row className="row">
+        <Row
+          className="row"
+          style={{
+            justifyContent:
+              isHiddenSearch && isHiddenCart ? "space-between" : "unset",
+          }}
+        >
           <Col span={6} className="wrapperTextHeader">
             VANDUC
           </Col>
-          <Col span={12}>
-            <Search
-              placeholder="input search text"
-              allowClear
-              enterButton
-              size="large"
-              onSearch={onSearch}
-            />
-          </Col>
+          {!isHiddenSearch && (
+            <Col span={12}>
+              <Search
+                placeholder="input search text"
+                allowClear
+                enterButton
+                size="large"
+                onSearch={onSearch}
+              />
+            </Col>
+          )}
+
           <Col span={6} className="UserInfo">
             <LoadingComponent isLoading={loading}>
               <div className="WrapperAccount">
-                <UserOutlined className="AccountIcon" />
+                {userAvatar ? (
+                  <img
+                    src={userAvatar}
+                    style={{
+                      height: "30px",
+                      width: "30px",
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                    }}
+                    alt="avatar"
+                  />
+                ) : (
+                  <UserOutlined className="AccountIcon" />
+                )}
+
                 {user?.access_token ? (
                   <>
                     <Popover content={content} trigger="click">
                       <div style={{ cursor: "pointer", paddingTop: "10px" }}>
-                        {user?.name || user?.email || "User"}
+                        {userName || user?.email || "User"}
                       </div>
                     </Popover>
                   </>
@@ -96,12 +139,14 @@ function HeaderComponent() {
                 )}
               </div>
             </LoadingComponent>
-            <div className="WrapperCart">
-              <Badge count={4} size="small">
-                <ShoppingCartOutlined className="CartIcon" />
-              </Badge>
-              <span className="CartText">Giỏ hàng </span>
-            </div>
+            {!isHiddenCart && (
+              <div className="WrapperCart">
+                <Badge count={4} size="small">
+                  <ShoppingCartOutlined className="CartIcon" />
+                </Badge>
+                <span className="CartText">Giỏ hàng </span>
+              </div>
+            )}
           </Col>
         </Row>
       </div>

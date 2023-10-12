@@ -6,6 +6,9 @@ import { useSelector } from "react-redux";
 import * as UserService from "../../services/UserService";
 import { useMutationHooks } from "../../hooks/useMutationHook";
 import LoadingComponent from "../../components/LoadingComponent/LoadingComponent";
+import { Button, Upload } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
+import { getBase64 } from "../../utils";
 function ProfilePage() {
   const user = useSelector((state) => state.user);
   const [email, setEmail] = useState("");
@@ -13,9 +16,10 @@ function ProfilePage() {
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [avatar, setAvatar] = useState("");
-  const mutation = useMutationHooks((id, data) =>
-    UserService.updateUser(id, data)
-  );
+  const mutation = useMutationHooks((data) => {
+    const { id, ...rests } = data;
+    UserService.updateUser(id, rests);
+  });
 
   const { data, isLoading } = mutation;
 
@@ -39,11 +43,16 @@ function ProfilePage() {
   const handleChangeAddress = (value) => {
     setAddress(value);
   };
-  const handleChangeAvatar = (value) => {
-    setAvatar(value);
+
+  const handleChangeAvatar = async ({ fileList }) => {
+    const file = fileList[0];
+
+    file.preview = await getBase64(file.originFileObj);
+
+    setAvatar(file.preview);
   };
   const handleUpdate = () => {
-    mutation.mutate(user.id, (email, name, phone, address, avatar));
+    mutation.mutate({ id: user.id, email, name, phone, address, avatar });
   };
 
   return (
@@ -155,12 +164,24 @@ function ProfilePage() {
             <label className="wrapperLabel" htmlFor="avatar">
               Avatar
             </label>
-            <InputForm
-              onChange={handleChangeAvatar}
-              value={avatar}
-              style={{ width: "300px" }}
-              id="avatar"
-            />
+
+            <Upload onChange={handleChangeAvatar} maxCount={1}>
+              <Button icon={<UploadOutlined />}>Select File</Button>
+            </Upload>
+
+            {avatar && (
+              <img
+                src={avatar}
+                style={{
+                  height: "60px",
+                  width: "60px",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                }}
+                alt={avatar}
+              />
+            )}
+
             <button
               onClick={handleUpdate}
               style={{

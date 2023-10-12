@@ -49,6 +49,7 @@ export const updateUser = async (id, data) => {
     `http://localhost:3001/api/user/update-user/${id}`,
     data
   );
+  console.log("data", data);
 
   return res.data;
 };
