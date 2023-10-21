@@ -24,7 +24,6 @@ export const getDetailProduct = async (id) => {
 };
 
 export const updateProduct = async ({ id, token, rests }) => {
-  console.log("bbbbb", rests);
   const res = await axiosJWT.put(
     `http://localhost:3001/api/product/update/${id}`,
     rests,
@@ -41,6 +40,21 @@ export const updateProduct = async ({ id, token, rests }) => {
 export const deleteProduct = async ({ id, token }) => {
   const res = await axiosJWT.delete(
     `http://localhost:3001/api/product/delete/${id}`,
+
+    {
+      headers: {
+        token: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return res.data;
+};
+
+export const deleteManyProduct = async (data, token) => {
+  const res = await axiosJWT.post(
+    `http://localhost:3001/api/product/delete-many`,
+    data,
 
     {
       headers: {

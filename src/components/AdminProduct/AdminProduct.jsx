@@ -1,7 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./AdminProduct.scss";
-import { Button, Checkbox, Form, Input, Modal, Upload, message } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import {
+  Button,
+  Checkbox,
+  Form,
+  Input,
+  Modal,
+  Space,
+  Upload,
+  message,
+} from "antd";
+
 import TableComponent from "../TableComponent/TableComponent";
 import InputComponent from "../InputComponent/InputComponent";
 import { getBase64 } from "../../utils";
@@ -9,16 +18,23 @@ import * as ProductService from "../../services/ProductService";
 import { useMutationHooks } from "../../hooks/useMutationHook";
 import LoadingComponent from "../LoadingComponent/LoadingComponent";
 import { useQueries, useQuery } from "@tanstack/react-query";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  SearchOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 import DrawerComponent from "../DrawerComponent/DrawerComponent";
 import { useSelector } from "react-redux";
 import ModalComponent from "../ModalComponent/ModalComponent";
+
 function AdminProduct() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
   const [rowSelected, setRowSelected] = useState("");
   const [isModalDelete, setIsModalDelete] = useState(false);
+  const searchInput = useRef(null);
   const inittial = () => ({
     name: "",
     price: "",
@@ -68,6 +84,17 @@ function AdminProduct() {
 
     const res = ProductService.deleteProduct({
       id,
+      token,
+    });
+
+    return res;
+  });
+
+  const mutationDeleteMany = useMutationHooks((data) => {
+    const { token, ...ids } = data;
+
+    const res = ProductService.deleteManyProduct({
+      ids,
       token,
     });
 
@@ -124,6 +151,17 @@ function AdminProduct() {
     setIsOpenDrawer(true);
   };
 
+  const handleDeleteManyProducts = (ids) => {
+    mutationDeleteMany.mutate(
+      { ids: ids, token: user?.access_token },
+      {
+        onSettled: () => {
+          queryProduct.refetch();
+        },
+      }
+    );
+  };
+
   const { data, isLoading, isSuccess, isError } = mutation;
 
   const {
@@ -139,6 +177,13 @@ function AdminProduct() {
     isSuccess: isSuccessDeleted,
     isError: isErrorDeleted,
   } = mutationDelete;
+
+  const {
+    data: dataDeletedMany,
+    isLoading: isLoadingDeletedMany,
+    isSuccess: isSuccessDeletedMany,
+    isError: isErrorDeletedMany,
+  } = mutationDeleteMany;
 
   const queryProduct = useQuery({
     queryKey: ["products"],
@@ -164,15 +209,106 @@ function AdminProduct() {
     );
   };
 
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    confirm();
+  };
+  const handleReset = (clearFilters) => {
+    clearFilters();
+  };
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({
+      setSelectedKeys,
+      selectedKeys,
+      confirm,
+      clearFilters,
+    }) => (
+      <div
+        style={{
+          padding: 8,
+        }}
+        onKeyDown={(e) => e.stopPropagation()}
+      >
+        <InputComponent
+          ref={searchInput}
+          placeholder={`Search ${dataIndex}`}
+          value={selectedKeys[0]}
+          onChange={(e) =>
+            setSelectedKeys(e.target.value ? [e.target.value] : [])
+          }
+          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          style={{
+            marginBottom: 8,
+            display: "block",
+          }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Search
+          </Button>
+          <Button
+            onClick={() => clearFilters && handleReset(clearFilters)}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Reset
+          </Button>
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined
+        style={{
+          color: filtered ? "#1890ff" : undefined,
+        }}
+      />
+    ),
+    onFilter: (value, record) =>
+      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilterDropdownOpenChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.current?.select(), 100);
+      }
+    },
+  });
+
   const columns = [
     {
       title: "Name",
       dataIndex: "name",
-      render: (text) => <a>{text}</a>,
+
+      sorter: (a, b) => a.name.length - b.name.length,
+      ...getColumnSearchProps("name"),
     },
     {
       title: "Price",
       dataIndex: "price",
+      sorter: (a, b) => a.price - b.price,
+      filters: [
+        {
+          text: ">= 50",
+          value: ">=",
+        },
+        {
+          text: "<= 50",
+          value: "<=",
+        },
+      ],
+      onFilter: (value, record) => {
+        if (value === ">=") {
+          return record.price >= 50;
+        }
+        return record.price <= 50;
+      },
     },
     {
       title: "Type",
@@ -181,6 +317,23 @@ function AdminProduct() {
     {
       title: "Rating",
       dataIndex: "rating",
+      sorter: (a, b) => a.rating - b.rating,
+      filters: [
+        {
+          text: ">= 3",
+          value: ">=",
+        },
+        {
+          text: "<= 3",
+          value: "<=",
+        },
+      ],
+      onFilter: (value, record) => {
+        if (value === ">=") {
+          return Number(record.rating) >= 3;
+        }
+        return Number(record.rating) <= 3;
+      },
     },
     {
       title: "Action",
@@ -231,6 +384,14 @@ function AdminProduct() {
       message.error();
     }
   }, [isSuccessDeleted]);
+
+  useEffect(() => {
+    if (isSuccessDeletedMany && dataDeletedMany.status === "OK") {
+      message.success();
+    } else if (isErrorDeletedMany) {
+      message.error();
+    }
+  }, [isSuccessDeletedMany]);
 
   const handleCancelDelete = () => {
     setIsModalDelete(false);
@@ -325,6 +486,7 @@ function AdminProduct() {
       </Button>
       <div className="TableUser">
         <TableComponent
+          handleDeleteMany={handleDeleteManyProducts}
           columns={columns}
           isLoading={isLoadingProduct}
           data={dataTable}
@@ -342,6 +504,7 @@ function AdminProduct() {
         open={isModalOpen}
         onCancel={handleCancel}
         footer={null}
+        forceRender
       >
         <LoadingComponent isLoading={isLoading}>
           <Form
@@ -673,6 +836,7 @@ function AdminProduct() {
         open={isModalDelete}
         onCancel={handleCancelDelete}
         onOk={handleDeleteProduct}
+        forceRender
       >
         <LoadingComponent isLoading={isLoadingDeleted}>
           <div>Bạn có chắc xóa sản phẩm này không ? </div>
